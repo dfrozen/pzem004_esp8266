@@ -1,11 +1,11 @@
 # pzem004_esp8266
-Energy monitor Based on Pzem-004T <br>
+# Energy monitor Based on Pzem-004T <br>
 ESP 8266 Arduino code with webupdate. MQTT+LCD+PZEM004
 <br>
 
-#ver 0.0.2
+# ver 0.0.2
 
-# LICENSE
+# License
 MIT License
 
 Copyright (c) 2017 Andrey Kuznetsoff
