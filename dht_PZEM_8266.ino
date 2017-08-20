@@ -7,7 +7,6 @@
 #include <PubSubClient.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include "DHT.h"
 #include <SoftwareSerial.h>
 #include <PZEM004T.h>
 //#include <avr/wdt.h>
