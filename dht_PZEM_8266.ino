@@ -26,8 +26,8 @@ const char* host = "esp8266-webupdate";
 const char* update_path = "/firmware";
 const char* update_username = "admin";
 const char* update_password = "admin";
-const char* ssid = "Bestoloch";
-const char* password = "511794sinikon";
+const char* ssid = "ssid name";
+const char* password = "ssid password";
 
 #define MQTT_SERVER "10.10.100.14"  ///YourMQTTBroker'sIP
 const int mqtt_port = 1883;
