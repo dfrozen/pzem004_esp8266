@@ -5,13 +5,16 @@ ESP 8266 Arduino code with webupdate. MQTT+LCD+PZEM004
 
 ## Library
 
-Use MQTT PubSub 1.99
+Use MQTT PubSub 2.6.0
 LiquidCrystal_I2C.h
 SoftwareSerial.h
 PZEM004T.h 
 https://github.com/dfrozen/PZEM004T.git
 
+## ver 0.1.1
+MQTT PubSub 2.6.0
 ## ver 0.0.2
+MQTT PubSub 1.99
 
 ## License
 MIT License
