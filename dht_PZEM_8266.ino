@@ -7,13 +7,14 @@
 #include <PubSubClient.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include "DHT.h"
 #include <SoftwareSerial.h>
 #include <PZEM004T.h>
 //#include <avr/wdt.h>
 double sens[4];
 
-unsigned long last_mls,last_send = millis();
-unsigned long count;
+//unsigned long last_mls,last_send = millis();
+//unsigned long count;
 
 PZEM004T pzem(13,15);  // RX,TX
 IPAddress ip(192,168,1,1);
@@ -25,23 +26,21 @@ const char* host = "esp8266-webupdate";
 const char* update_path = "/firmware";
 const char* update_username = "admin";
 const char* update_password = "admin";
-const char* ssid = "ssid name";
-const char* password = "ssid password";
+const char* ssid = "Bestoloch";
+const char* password = "511794sinikon";
 
 #define MQTT_SERVER "10.10.100.14"  ///YourMQTTBroker'sIP
 const int mqtt_port = 1883;
-const char *mqtt_user = "orangepi";
-const char *mqtt_pass = "orangepi";
-
-//char* Topic = "home/senor/sensor1"; //subscribe to topic to be notified about
-//EDIT THESE LINES TO MATCH YOUR SETUP
-
 
 ESP8266WebServer httpServer(80);
 ESP8266HTTPUpdateServer httpUpdater;
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  // handle message arrived
+}
 WiFiClient wifiClient;
-//PubSubClient client(MQTT_SERVER, 1883, callback, wifiClient);
-PubSubClient client(wifiClient, MQTT_SERVER, mqtt_port);
+PubSubClient client(MQTT_SERVER, 1883, callback, wifiClient);
+
 
 #define BUFFER_SIZE 100
 
@@ -51,10 +50,6 @@ String macToStr(const uint8_t* mac){
     result += String(mac[i], 16);}
   return result;
 }
-
-void callback(const MQTT::Publish& pub){
-   //Print out some debugging info 
-}//void
 
 void re_connect() {
 
@@ -78,18 +73,11 @@ void re_connect() {
       Serial.print("\tAttempting MQTT connection...");
       lcd.clear();  
       lcd.print("MQTT connection...");
-      // Generate client name based on MAC address and last 8 bits of microsecond counter
-      String clientName;
-      clientName += "esp8266-";
-      uint8_t mac[6];
-      WiFi.macAddress(mac);
-      clientName += macToStr(mac);
-      Serial.print(clientName);
-      if (client.connect(MQTT:: Connect(clientName.c_str()).set_auth(mqtt_user, mqtt_pass))) {
-        Serial.println("\tMQTT Connected");
+  
+      if (client.connect("esp8266-AD14C5","orangepi","orangepi")) {
+        Serial.println("MQTT Connected");
         lcd.clear();  
-        lcd.print("\tMQTT Connected");
-        client.set_callback(callback);
+        lcd.print("MQTT Connected");
       }
       //otherwise print failed for debugging
       else { Serial.println("\tFailed."); abort(); }
@@ -97,21 +85,18 @@ void re_connect() {
   }
 }
 void setup() {
-  //initialize the light as an output and set to LOW (off)
-  //wdt_disable();
-  //start the serial line for debugging
+
   Serial.begin(115200);
   pzem.setAddress(ip);
   pinMode(2, OUTPUT);    
- digitalWrite(2, LOW);    // выключаем светодиод
+  digitalWrite(2, LOW);    // выключаем светодиод
   delay(100);
   Wire.begin(4, 5);      // 4 - sda 5 - scl
   lcd.init();            // инициализация дисплея
   lcd.backlight();       // подсветка
   //lcd.blink();           // моргание пикселем
   lcd.print("System started"); // че то пишет
-  //delay(2000);             // ждем 2 секунды
- // dht.begin();           // подключаем датчик
+
   
   //start wifi subsystem 
   WiFi.begin(ssid, password);
@@ -128,19 +113,11 @@ void setup() {
 }
 void loop(){
 
-
-
-
   //reconnect if connection is lost
   if (!client.connected() && WiFi.status() == 3) {re_connect();}
   //maintain MQTT connection
    delay(200);  
   httpServer.handleClient();
- 
-    
- if (millis() - last_send > 3000) {
- digitalWrite(2,LOW);   // зажигаем светодиод
-    last_send = millis();
   sens[0] = pzem.voltage(ip);
   if (sens[0] < 0.0) sens[0] = 0.0; Serial.print(sens[0]);Serial.print(" V; ");
   client.publish("home/sensors/sensor1/v",String(sens[0]).c_str());
@@ -154,17 +131,7 @@ void loop(){
   sens[3] = pzem.energy(ip);
   if(sens[3] >= 0.0){ Serial.print(sens[3]);Serial.println(" Wh; "); 
   client.publish("home/sensors/sensor1/wh",String(sens[3]).c_str());}
-Serial.println("________________________________________________________________________");
 
- count++;
-client.publish("home/sensors/sensor1/count",String(count));
-Serial.println(count);
- }
-
-digitalWrite(2, HIGH);    // выключаем светодиод
-
- 
- 
   //Print a message to the LCD.
   lcd.backlight();
   lcd.clear();   
