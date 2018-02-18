@@ -30,7 +30,9 @@ const char* ssid = "Bestoloch";
 const char* password = "511794sinikon";
 
 #define MQTT_SERVER "10.10.100.14"  ///YourMQTTBroker'sIP
-const int mqtt_port = 1883;
+#define mqtt_port  1883
+const char* mqtt_user="orangepi";
+const char* mqtt_pass="orangepi";
 
 ESP8266WebServer httpServer(80);
 ESP8266HTTPUpdateServer httpUpdater;
@@ -60,11 +62,11 @@ void re_connect() {
    lcd.print("Wi-Fi Connecting");
     Serial.print(ssid);
     Serial.println("...");
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
+    WiFi.begin(ssid, password);}
+    else {
+      delay(5000);
     }
-  }
+
 
   //make sure we are connected to WIFI before attemping to reconnect to MQTT
   if(WiFi.status() == WL_CONNECTED){
@@ -74,7 +76,7 @@ void re_connect() {
       lcd.clear();  
       lcd.print("MQTT connection...");
   
-      if (client.connect("esp8266-AD14C5","orangepi","orangepi")) {
+      if (client.connect("esp8266-AD14C5",mqtt_user,mqtt_pass)) {
         Serial.println("MQTT Connected");
         lcd.clear();  
         lcd.print("MQTT Connected");
@@ -149,12 +151,9 @@ void loop(){
   lcd.print(sens[2]);
   lcd.setCursor(7,1);
   lcd.print("Wh:");
-   lcd.setCursor(10,1);
+  lcd.setCursor(10,1);
   lcd.print(sens[3]);
 
    client.loop();
-
-  
-
 }//void
 
